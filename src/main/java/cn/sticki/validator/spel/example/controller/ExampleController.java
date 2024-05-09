@@ -1,8 +1,10 @@
 package cn.sticki.validator.spel.example.controller;
 
+import cn.sticki.validator.spel.SpelValidExecutor;
 import cn.sticki.validator.spel.example.advice.Resp;
 import cn.sticki.validator.spel.example.vo.GroupExampleParamVo;
 import cn.sticki.validator.spel.example.vo.SimpleExampleParamVo;
+import cn.sticki.validator.spel.result.ObjectValidResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 /**
  * 示例接口集合
@@ -39,6 +42,17 @@ public class ExampleController {
 	public Resp<Void> group(@RequestBody @Valid GroupExampleParamVo groupExampleParamVo) {
 		log.info("group");
 		return Resp.ok(null);
+	}
+
+	/**
+	 * 静态方法校验
+	 * <p>
+	 * 通过 {@link  SpelValidExecutor#validateObject(Object, Set)} 进行校验，这种方式仅校验 {@link cn.sticki.validator.spel.constrain} 包下的注解
+	 */
+	@PostMapping("/static")
+	public Resp<ObjectValidResult> staticTest(@RequestBody SimpleExampleParamVo simpleExampleParamVo) {
+		ObjectValidResult validResult = SpelValidExecutor.validateObject(simpleExampleParamVo);
+		return Resp.ok(validResult);
 	}
 
 }
