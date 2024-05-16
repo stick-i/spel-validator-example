@@ -42,7 +42,7 @@ public class AnnoTestParamVo {
 
 	private Boolean checkSize;
 
-	@SpelSize(condition = "#this.checkSize == true", min = "1 + 1", max = "10 + 10", message = "test集合大小必须在1-10之间")
+	@SpelSize(condition = "#this.checkSize == true", min = "1 + 1", max = "10 + 10", message = "test 长度必须在 {min} 和 {max} 之间")
 	private String testSpelSize;
 
 }
