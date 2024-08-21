@@ -1,10 +1,13 @@
 package cn.sticki.validator.spel.example.advice;
 
+import cn.sticki.validator.spel.example.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.validation.ValidationException;
 
 /**
  * SpringMVC的异常处理器
@@ -28,6 +31,24 @@ public class ControllerExceptionAdvice {
 				.reduce((s1, s2) -> s1 + "," + s2)
 				.orElse("");
 		return new Resp<>(400, msg);
+	}
+
+	@ExceptionHandler({BusinessException.class})
+	public Resp<Void> handleServiceException(BusinessException ex) {
+		return new Resp<>(ex.getCode(), ex.getMessage());
+	}
+
+	/**
+	 * 针对业务异常进行处理
+	 * <p>
+	 * <a href="https://github.com/stick-i/spel-validator/issues/19">参见GitHub issue</a>
+	 */
+	@ExceptionHandler({ValidationException.class})
+	public Resp<Void> handleValidationException(ValidationException ex) {
+		if (ex.getCause() instanceof BusinessException) {
+			return handleBindException((BindException) ex.getCause());
+		}
+		return new Resp<>(500, "system error");
 	}
 
 }
