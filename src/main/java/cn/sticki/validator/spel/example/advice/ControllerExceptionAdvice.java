@@ -34,7 +34,7 @@ public class ControllerExceptionAdvice {
 	}
 
 	@ExceptionHandler({BusinessException.class})
-	public Resp<Void> handleServiceException(BusinessException ex) {
+	public Resp<Void> handleBusinessException(BusinessException ex) {
 		return new Resp<>(ex.getCode(), ex.getMessage());
 	}
 
@@ -46,7 +46,7 @@ public class ControllerExceptionAdvice {
 	@ExceptionHandler({ValidationException.class})
 	public Resp<Void> handleValidationException(ValidationException ex) {
 		if (ex.getCause() instanceof BusinessException) {
-			return handleBindException((BindException) ex.getCause());
+			return handleBusinessException((BusinessException) ex.getCause());
 		}
 		return new Resp<>(500, "system error");
 	}
