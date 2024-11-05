@@ -1,10 +1,10 @@
 package cn.sticki.validator.spel.example.controller;
 
-import cn.sticki.validator.spel.SpelValidExecutor;
+import cn.sticki.spel.validator.core.SpelValidExecutor;
+import cn.sticki.spel.validator.core.result.ObjectValidResult;
 import cn.sticki.validator.spel.example.advice.Resp;
 import cn.sticki.validator.spel.example.vo.GroupExampleParamVo;
 import cn.sticki.validator.spel.example.vo.SimpleExampleParamVo;
-import cn.sticki.validator.spel.result.ObjectValidResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +47,7 @@ public class ExampleController {
 	/**
 	 * 静态方法校验
 	 * <p>
-	 * 通过 {@link  SpelValidExecutor#validateObject(Object, Set)} 进行校验，这种方式仅校验 {@link cn.sticki.validator.spel.constrain} 包下的注解
+	 * 通过 {@link  SpelValidExecutor#validateObject(Object, Set)} 进行校验，这种方式仅校验 {@link cn.sticki.spel.validator.constrain} 包下的注解
 	 */
 	@PostMapping("/static")
 	public Resp<ObjectValidResult> staticTest(@RequestBody SimpleExampleParamVo simpleExampleParamVo) {

@@ -25,13 +25,8 @@
 
 		<dependency>
 			<groupId>cn.sticki</groupId>
-			<artifactId>spel-validator</artifactId>
-			<version>0.2.0-beta</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate.validator</groupId>
-			<artifactId>hibernate-validator</artifactId>
+			<artifactId>spel-validator-javax</artifactId>
+			<version>0.4.0-beta</version>
 		</dependency>
 
 		<dependency>

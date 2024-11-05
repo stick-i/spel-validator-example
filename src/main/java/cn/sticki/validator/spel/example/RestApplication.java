@@ -1,6 +1,6 @@
 package cn.sticki.validator.spel.example;
 
-import cn.sticki.validator.spel.parse.EnableSpelValidatorBeanRegistrar;
+import cn.sticki.spel.validator.core.parse.EnableSpelValidatorBeanRegistrar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

@@ -1,7 +1,7 @@
 package cn.sticki.validator.spel.example.vo;
 
-import cn.sticki.validator.spel.SpelValid;
-import cn.sticki.validator.spel.constrain.*;
+import cn.sticki.spel.validator.constrain.*;
+import cn.sticki.spel.validator.javax.SpelValid;
 import lombok.Data;
 
 /**
