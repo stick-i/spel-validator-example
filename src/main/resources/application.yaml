@@ -1,4 +1,4 @@
 logging:
   level:
     cn.sticki: debug
-    cn.sticki.validator.spel.parse: debug
+    cn.sticki.spel.validator.core.parse: debug

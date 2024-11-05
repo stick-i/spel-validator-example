@@ -2,12 +2,11 @@ package cn.sticki.validator.spel.example.controller;
 
 import cn.sticki.validator.spel.example.advice.Resp;
 import cn.sticki.validator.spel.example.vo.AnnoTestParamVo;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 /**
  * 测试用例接口

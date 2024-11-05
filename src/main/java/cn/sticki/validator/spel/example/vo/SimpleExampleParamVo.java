@@ -2,10 +2,9 @@ package cn.sticki.validator.spel.example.vo;
 
 import cn.sticki.spel.validator.constrain.SpelAssert;
 import cn.sticki.spel.validator.constrain.SpelNotNull;
-import cn.sticki.spel.validator.javax.SpelValid;
+import cn.sticki.spel.validator.jakarta.SpelValid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * 测试参数

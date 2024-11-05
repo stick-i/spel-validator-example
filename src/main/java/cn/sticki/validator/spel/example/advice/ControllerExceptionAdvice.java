@@ -1,13 +1,12 @@
 package cn.sticki.validator.spel.example.advice;
 
 import cn.sticki.validator.spel.example.exception.BusinessException;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.validation.ValidationException;
 
 /**
  * SpringMVC的异常处理器
