@@ -34,4 +34,10 @@ public class SimpleExampleParamVo {
 	@SpelAssert(assertTrue = " T(cn.sticki.validator.spel.example.enums.ExampleEnum).getByCode(#this.testEnum) != null ", message = "枚举值不合法")
 	private Integer testEnum;
 
+	/**
+	 * 调用Spring Bean进行验证
+	 */
+	@SpelAssert(assertTrue = "@exampleService.getUser(#this.userId) != null", message = "用户不存在")
+	private Integer userId;
+
 }
