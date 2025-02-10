@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupTestController {
 
     @PostMapping("/addUser")
-    public void addUser(@RequestBody @SpelValid(spelGroups = GroupTestParamVo.Group.ADD) GroupTestParamVo add) {
+    public void addUser(@RequestBody @Validated @SpelValid(spelGroups = GroupTestParamVo.Group.ADD) GroupTestParamVo add) {
         log.info("addUser: {}", add);
     }
 
     @PostMapping("/updateUser")
-    public void updateUser(@RequestBody @SpelValid(spelGroups = GroupTestParamVo.Group.UPDATE) GroupTestParamVo update) {
+    public void updateUser(@RequestBody @Validated @SpelValid(spelGroups = GroupTestParamVo.Group.UPDATE) GroupTestParamVo update) {
         log.info("updateUser: {}", update);
     }
 

@@ -1,6 +1,7 @@
 package cn.sticki.validator.spel.example.vo;
 
 import cn.sticki.spel.validator.constrain.SpelNotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -17,6 +18,9 @@ public class GroupTestParamVo {
 
     @SpelNotNull(group = {Group.UPDATE, Group.ADD})
     private String name;
+
+    @NotNull
+    private String phone;
 
     public static class Group {
 
