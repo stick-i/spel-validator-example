@@ -1,6 +1,8 @@
 package cn.sticki.validator.spel.example.advice;
 
 import cn.sticki.validator.spel.example.exception.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -47,7 +49,26 @@ public class ControllerExceptionAdvice {
 		if (ex.getCause() instanceof BusinessException) {
 			return handleBusinessException((BusinessException) ex.getCause());
 		}
+		log.error(ex.getMessage(), ex);
 		return new Resp<>(500, "system error");
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public Resp<Void> handleConstraintViolationException(HttpServletRequest request, ConstraintViolationException ex) {
+		String msg = ex.getConstraintViolations().stream()
+				.map(violation -> {
+					// 处理带有属性路径的约束异常，由于客户端不需要知道完整的属性路径，所以只返回最后一个属性名
+					String originalPath = violation.getPropertyPath().toString();
+					// 找到最后一个点号的位置，提取点号后面的部分
+					int dotIndex = originalPath.lastIndexOf('.');
+					if (dotIndex != -1 && dotIndex < originalPath.length() - 1) {
+						return originalPath.substring(dotIndex + 1) + " " + violation.getMessage();
+					}
+					return originalPath + " " + violation.getMessage();
+				})
+				.reduce((s1, s2) -> s1 + "; " + s2)
+				.orElse("");
+		return new Resp<>(400, msg);
 	}
 
 }
