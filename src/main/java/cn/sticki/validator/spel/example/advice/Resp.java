@@ -36,6 +36,10 @@ public class Resp<T> implements java.io.Serializable {
 		this.msg = msg;
 	}
 
+	public static <T> Resp<T> ok() {
+        return new Resp<>();
+	}
+
 	public static <T> Resp<T> ok(T data) {
 		Resp<T> resp = new Resp<>();
 		resp.data = data;

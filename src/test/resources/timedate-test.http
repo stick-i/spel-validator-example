@@ -1,0 +1,602 @@
+### 时间日期验证测试用例
+### 基于 TimeDateTestParamVo 参数类的各种验证场景
+
+### ========== 基本时间约束验证 - 正向测试用例 ==========
+
+### 1. 基本验证通过 - 所有时间字段符合约束
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+
+    client.test("验证通过 - 消息应为success", function () {
+        client.assert(response.body.msg === "success", "Expected msg to be success");
+    });
+%}
+
+### ========== 基本时间约束验证 - 负向测试用例 ==========
+
+### 2. 生日验证失败 - 生日不能是未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "2030-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("生日验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("生日验证失败 - 错误消息应包含birthday字段", function () {
+        client.assert(response.body.msg.includes("birthday"), "Expected msg to contain 'birthday'");
+    });
+%}
+
+### 3. 会议时间验证失败 - 会议时间不能是过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2020-01-01T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("会议时间验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("会议时间验证失败 - 错误消息应包含meetingStartTime字段", function () {
+        client.assert(response.body.msg.includes("meetingStartTime"), "Expected msg to contain 'meetingStartTime'");
+    });
+%}
+
+### 4. 项目截止日期验证失败 - 截止日期不能是过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2020-01-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("项目截止日期验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("项目截止日期验证失败 - 错误消息应包含projectDeadline字段", function () {
+        client.assert(response.body.msg.includes("projectDeadline"), "Expected msg to contain 'projectDeadline'");
+    });
+%}
+
+### 5. 最后登录时间验证失败 - 最后登录时间不能是未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2030-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("最后登录时间验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("最后登录时间验证失败 - 错误消息应包含lastLoginTime字段", function () {
+        client.assert(response.body.msg.includes("lastLoginTime"), "Expected msg to contain 'lastLoginTime'");
+    });
+%}
+
+### ========== 条件验证场景 ==========
+
+### 6. 条件验证通过 - enableTimeValidation=false，预约时间可以是过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "appointmentTime": "2020-01-01T10:00:00",
+  "createdTime": "2020-01-01T10:00:00",
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("条件验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+
+    client.test("条件验证通过 - 消息应为success", function () {
+        client.assert(response.body.msg === "success", "Expected msg to be success");
+    });
+%}
+
+### 7. 条件验证失败 - enableTimeValidation=true，预约时间必须是未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": true,
+  "appointmentTime": "2020-01-01T10:00:00",
+  "createdTime": "2030-01-01T10:00:00",
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("条件验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("条件验证失败 - 错误消息应包含appointmentTime和createdTime字段", function () {
+        client.assert(response.body.msg.includes("appointmentTime"), "Expected msg to contain 'appointmentTime'");
+        client.assert(response.body.msg.includes("createdTime"), "Expected msg to contain 'createdTime'");
+    });
+%}
+
+### 8. 条件验证通过 - enableTimeValidation=true，时间字段符合约束
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": true,
+  "appointmentTime": "2025-12-31T15:00:00",
+  "createdTime": "2024-01-01T10:00:00",
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("条件验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### ========== 重复注解验证场景 ==========
+
+### 9. 重复注解验证通过 - strictMode和businessHours都为false
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "eventTime": "2020-01-01T10:00:00",
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("重复注解验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### 10. 重复注解验证失败 - strictMode=true，事件时间必须是未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": true,
+  "businessHours": false,
+  "eventTime": "2020-01-01T10:00:00",
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("重复注解验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("重复注解验证失败 - 错误消息应包含eventTime字段", function () {
+        client.assert(response.body.msg.includes("eventTime"), "Expected msg to contain 'eventTime'");
+    });
+
+    client.test("重复注解验证失败 - 错误消息应包含严格模式相关信息", function () {
+        client.assert(response.body.msg.includes("严格模式"), "Expected msg to contain '严格模式'");
+    });
+%}
+
+### 11. 重复注解验证失败 - businessHours=true，事件时间必须是未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": true,
+  "eventTime": "2020-01-01T10:00:00",
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false
+}
+
+> {%
+    client.test("重复注解验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("重复注解验证失败 - 错误消息应包含eventTime字段", function () {
+        client.assert(response.body.msg.includes("eventTime"), "Expected msg to contain 'eventTime'");
+    });
+
+    client.test("重复注解验证失败 - 错误消息应包含工作时间模式相关信息", function () {
+        client.assert(response.body.msg.includes("工作时间模式"), "Expected msg to contain '工作时间模式'");
+    });
+%}
+
+### ========== 复杂业务场景验证 ==========
+
+### 15. 复杂业务场景通过 - 非管理员非紧急，任务调度时间可以是任意时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false,
+  "taskScheduleTime": "2030-01-01T10:00:00"
+}
+
+> {%
+    client.test("复杂业务场景通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### 16. 复杂业务场景通过 - 管理员紧急情况，可以设置过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "admin",
+  "urgent": true,
+  "taskScheduleTime": "2020-01-01T10:00:00"
+}
+
+> {%
+    client.test("复杂业务场景通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### 17. 复杂业务场景失败 - 管理员非紧急情况，不能设置过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "admin",
+  "urgent": false,
+  "taskScheduleTime": "2020-01-01T10:00:00"
+}
+
+> {%
+    client.test("复杂业务场景失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("复杂业务场景失败 - 错误消息应包含taskScheduleTime字段", function () {
+        client.assert(response.body.msg.includes("taskScheduleTime"), "Expected msg to contain 'taskScheduleTime'");
+    });
+%}
+
+### ========== 灵活调度时间验证场景 ==========
+
+### 18. 灵活调度时间验证失败 - 普通用户设置过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false,
+  "flexibleScheduleTime": "2020-01-01T10:00:00"
+}
+
+> {%
+    client.test("灵活调度时间验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("灵活调度时间验证失败 - 错误消息应包含flexibleScheduleTime字段", function () {
+        client.assert(response.body.msg.includes("flexibleScheduleTime"), "Expected msg to contain 'flexibleScheduleTime'");
+    });
+
+    client.test("灵活调度时间验证失败 - 错误消息应包含普通用户相关信息", function () {
+        client.assert(response.body.msg.includes("普通用户"), "Expected msg to contain '普通用户'");
+    });
+%}
+
+### 19. 灵活调度时间验证通过 - 普通用户设置未来时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false,
+  "flexibleScheduleTime": "2099-12-31T10:00:00"
+}
+
+> {%
+    client.test("灵活调度时间验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### 20. 灵活调度时间验证通过 - 管理员设置过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "admin",
+  "urgent": false,
+  "flexibleScheduleTime": "2020-01-01T10:00:00"
+}
+
+> {%
+    client.test("灵活调度时间验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### ========== 支持的时间类型验证 ==========
+
+### 21. 多种时间类型验证通过
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false,
+  "futureUtilDate": "2099-12-31T10:00:00.000Z",
+  "pastLocalDate": "2020-01-01",
+  "futureOrPresentLocalDateTime": "2099-01-01T10:00:00",
+  "pastOrPresentInstant": "2024-01-01T10:00:00Z",
+  "futureOffsetDateTime": "2099-01-01T10:00:00+08:00",
+  "pastZonedDateTime": "2020-01-01T10:00:00+08:00[Asia/Shanghai]",
+  "futureOrPresentYear": "2099",
+  "pastOrPresentYearMonth": "2024-01",
+  "futureCalendar": "2099-12-31T10:00:00.000Z"
+}
+
+> {%
+    client.test("多种时间类型验证通过 - 响应状态码应为200", function () {
+        client.assert(response.body.code === 200, "Expected code to be 200");
+    });
+%}
+
+### ========== 自定义错误消息验证 ==========
+
+### 22. 自定义错误消息验证失败 - 会议时间设置为过去时间
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "1990-01-01",
+  "meetingStartTime": "2099-12-31T10:00:00",
+  "projectDeadline": "2099-06-01",
+  "lastLoginTime": "2024-01-01T08:00:00.000Z",
+  "enableTimeValidation": false,
+  "strictMode": false,
+  "businessHours": false,
+  "validationGroup": "none",
+  "userRole": "user",
+  "urgent": false,
+  "customMessageMeetingTime": "2020-01-01T10:00:00",
+  "customI18nPastDate": "2030-01-01"
+}
+
+> {%
+    client.test("自定义错误消息验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("自定义错误消息验证失败 - 错误消息应包含customMessageMeetingTime字段", function () {
+        client.assert(response.body.msg.includes("customMessageMeetingTime"), "Expected msg to contain 'customMessageMeetingTime'");
+    });
+
+    client.test("自定义错误消息验证失败 - 错误消息应包含customI18nPastDate字段", function () {
+        client.assert(response.body.msg.includes("customI18nPastDate"), "Expected msg to contain 'customI18nPastDate'");
+    });
+%}
+
+### ========== 综合场景测试 ==========
+
+### 23. 综合场景验证失败 - 多个字段同时违反约束
+POST http://localhost:8080/test/timeDate
+Content-Type: application/json
+
+{
+  "birthday": "2030-01-01",
+  "meetingStartTime": "2020-01-01T10:00:00",
+  "projectDeadline": "2020-01-01",
+  "lastLoginTime": "2030-01-01T08:00:00.000Z",
+  "enableTimeValidation": true,
+  "appointmentTime": "2020-01-01T10:00:00",
+  "createdTime": "2030-01-01T10:00:00",
+  "strictMode": true,
+  "businessHours": true,
+  "eventTime": "2020-01-01T10:00:00",
+  "validationGroup": "admin",
+  "userRole": "user",
+  "urgent": false,
+  "taskScheduleTime": "2020-01-01T10:00:00",
+  "flexibleScheduleTime": "2020-01-01T10:00:00"
+}
+
+> {%
+    client.test("综合场景验证失败 - 响应状态码应为400", function () {
+        client.assert(response.body.code === 400, "Expected code to be 400");
+    });
+
+    client.test("综合场景验证失败 - 错误消息应包含多个字段", function () {
+        const msg = response.body.msg;
+        const expectedFields = ["birthday", "meetingStartTime", "projectDeadline", "lastLoginTime",
+            "appointmentTime", "createdTime", "eventTime", "flexibleScheduleTime"];
+
+        let foundFields = 0;
+        expectedFields.forEach(field => {
+            if (msg.includes(field)) {
+                foundFields++;
+            }
+        });
+
+        client.assert(foundFields >= 5, `Expected at least 5 fields in error message, found ${foundFields}`);
+    });
+
+    client.test("综合场景验证失败 - 完整错误消息格式验证", function () {
+        const expectedMessage = "meetingStartTime 需要是一个将来的时间,eventTime 在工作时间模式下，事件时间必须是未来时间,flexibleScheduleTime 普通用户只能设置未来时间,birthday 需要是一个过去的时间,appointmentTime 需要是一个将来的时间,eventTime 在严格模式下，事件时间必须是未来时间,createdTime 需要是一个过去的时间,lastLoginTime 需要是一个过去或现在的时间,projectDeadline 需要是一个将来或现在的时间";
+
+        // 验证消息包含关键的错误信息片段
+        client.assert(response.body.msg.includes("需要是一个将来的时间"), "Expected future time validation message");
+        client.assert(response.body.msg.includes("需要是一个过去的时间"), "Expected past time validation message");
+        client.assert(response.body.msg.includes("严格模式"), "Expected strict mode message");
+        client.assert(response.body.msg.includes("工作时间模式"), "Expected business hours message");
+        client.assert(response.body.msg.includes("普通用户只能设置未来时间"), "Expected user role message");
+    });
+%}
