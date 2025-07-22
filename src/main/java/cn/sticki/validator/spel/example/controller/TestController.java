@@ -3,9 +3,13 @@ package cn.sticki.validator.spel.example.controller;
 import cn.sticki.validator.spel.example.advice.Resp;
 import cn.sticki.validator.spel.example.vo.AnnoTestParamVo;
 import cn.sticki.validator.spel.example.vo.ListTestParamVo;
+import cn.sticki.validator.spel.example.vo.TimeDateTestParamVo;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 测试用例接口
@@ -40,4 +44,14 @@ public class TestController {
 		log.info("ListTest");
 		return Resp.ok();
 	}
+
+	/**
+	 * 时间日期测试
+	 */
+	@PostMapping("/timeDate")
+	public Resp<Void> timeDateTest(@RequestBody @Valid TimeDateTestParamVo paramVo) {
+		log.info("timeDateTest");
+		return Resp.ok();
+	}
+
 }
