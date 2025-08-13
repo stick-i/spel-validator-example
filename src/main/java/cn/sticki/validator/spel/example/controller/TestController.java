@@ -2,6 +2,7 @@ package cn.sticki.validator.spel.example.controller;
 
 import cn.sticki.validator.spel.example.advice.Resp;
 import cn.sticki.validator.spel.example.vo.AnnoTestParamVo;
+import cn.sticki.validator.spel.example.vo.DigitsAndRangeTestParamVo;
 import cn.sticki.validator.spel.example.vo.ListTestParamVo;
 import cn.sticki.validator.spel.example.vo.TimeDateTestParamVo;
 import jakarta.validation.Valid;
@@ -51,6 +52,17 @@ public class TestController {
 	@PostMapping("/timeDate")
 	public Resp<Void> timeDateTest(@RequestBody @Valid TimeDateTestParamVo paramVo) {
 		log.info("timeDateTest");
+		return Resp.ok();
+	}
+
+	/**
+	 * 数字位数和范围测试
+	 * <p>
+	 * 测试 SpelDigits、SpelMax、SpelMin 新功能
+	 */
+	@PostMapping("/digitsAndRange")
+	public Resp<Void> digitsAndRangeTest(@RequestBody @Valid DigitsAndRangeTestParamVo paramVo) {
+		log.info("digitsAndRangeTest");
 		return Resp.ok();
 	}
 
